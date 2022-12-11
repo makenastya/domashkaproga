@@ -36,20 +36,42 @@ class Complex:
         return r, f
 
     def plus(self, other):
-        return Complex(self._re + other.get_re(), self._im + other.get_im())
+        if isinstance(other, Complex):
+            real = other.get_re()
+            imag = other.get_im()
+        else:
+            real = other
+            imag = 0
+        return Complex(self._re + real, self._im + imag)
 
     def minus(self, other):
-        return Complex(self._re - other.get_re(), self._im - other.get_im())
+        if isinstance(other, Complex):
+            real = other.get_re()
+            imag = other.get_im()
+        else:
+            real = other
+            imag = 0
+        return Complex(self._re - real, self._im - imag)
 
     def prod(self, other):
-        return Complex(self._re * other.get_re() - self._im * other.get_im(),
-                       self._re * other.get_im() + self._im * other.get_re())
+        if other is Complex:
+            real = other.get_re()
+            imag = other.get_im()
+        else:
+            real = other
+            imag = 0
+        return Complex(self._re * real - self._im * imag,
+                       self._re * imag + self._im * real)
 
     def div(self, other):
         a1 = self._re
         b1 = self._im
-        a2 = other.get_re()
-        b2 = other.get_im()
+        if isinstance(other, Complex):
+            a2 = other.get_re()
+            b2 = other.get_im()
+        else:
+            a2 = other
+            b2 = 0
         re = (a1 * a2 + b1 * b2) / (a2 * a2 + b2 * b2)
         im = (a2 * b1 - a1 * b2) / (a2 * a2 + b2 * b2)
         return Complex(re, im)
@@ -60,7 +82,54 @@ class Complex:
         return (real * real) + (imag * imag)
 
     def __eq__(self, other):
-        return self.get_re() == other.get_re() and self.get_im() == other.get_im()
+        if isinstance(other, Complex):
+            return self.get_re() == other.get_re() and self.get_im() == other.get_im()
+        elif self.get_im() == 0:
+            return self.get_re() == other
+        else:
+            return False
+
+    def __add__(self, other):
+        return self.plus(other)
+
+    def __radd__(self, other):
+        return self.plus(other)
+
+    def __sub__(self, other):
+        return self.minus(other)
+
+    def __rsub__(self, other):
+        return self.minus(other)
+
+    def __mul__(self, other):
+        return self.prod(other)
+
+    def __rmul__(self, other):
+        return self.prod(other)
+
+    def __truediv__(self, other):
+        return self.div(other)
+
+    def __rtruediv__(self, other):
+        # Other is not a complex number, otherwise __truediv__ is used
+        return Complex(other, 0).div(self)
+
+    def __getitem__(self, i):
+        if i == 0:
+            return self.get_re()
+        elif i == 1:
+            return self.get_im()
+        else:
+            return None
+
+    def __setitem__(self, i, value):
+        if i == 0:
+            self.set_re(value)
+        elif i == 1:
+            self.set_im(value)
+
+    def __iter__(self):
+        return iter([self._re, self._im])
 
     def __str__(self):
         if self._im > 0:
