@@ -54,7 +54,7 @@ class Complex:
         return Complex(self._re - real, self._im - imag)
 
     def prod(self, other):
-        if other is Complex:
+        if isinstance(other, Complex):
             real = other.get_re()
             imag = other.get_im()
         else:
